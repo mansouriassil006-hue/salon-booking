@@ -23,11 +23,23 @@
     </div>
 
     <!-- Day Off Section -->
-    <div class="card">
-      <h2 class="section-title">تعطيل اليوم (Day Off)</h2>
-      <p class="note" id="dayoffStatus">جاري التحقق...</p>
-      <button id="toggleDayoffBtn" class="btn-gold" style="display:none;">تعطيل اليوم الحالي</button>
+    <div class="card" id="dayoffCard">
+      <h2 class="section-title">تعطيل الأيام (Day Off)</h2>
+
+      <div class="field-group">
+        <label>اختر التاريخ</label>
+        <input type="date" id="dayoffDateInput" class="input-field" dir="ltr">
+      </div>
+
+      <button id="addDayoffBtn" class="btn-gold">تعطيل هذا اليوم</button>
       <div id="dayoffMessage" class="message-box"></div>
+
+      <div id="dayoffListSection" style="margin-top:20px;">
+        <h3 style="color:#b8b8b8; font-size:14px; margin-bottom:10px;">الأيام المعطلة القادمة</h3>
+        <div id="dayoffListContainer">
+          <p class="note">جاري التحميل...</p>
+        </div>
+      </div>
     </div>
 
     <!-- Bookings Section -->
