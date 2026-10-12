@@ -5,9 +5,11 @@ let isAdminUser = false;
 const welcomeTitle = document.getElementById('welcomeTitle');
 const welcomeSubtitle = document.getElementById('welcomeSubtitle');
 const logoutBtn = document.getElementById('logoutBtn');
-const dayoffStatus = document.getElementById('dayoffStatus');
-const toggleDayoffBtn = document.getElementById('toggleDayoffBtn');
+const dayoffCard = document.getElementById('dayoffCard');
+const dayoffDateInput = document.getElementById('dayoffDateInput');
+const addDayoffBtn = document.getElementById('addDayoffBtn');
 const dayoffMessage = document.getElementById('dayoffMessage');
+const dayoffListContainer = document.getElementById('dayoffListContainer');
 const bookingsContainer = document.getElementById('bookingsContainer');
 const refreshBtn = document.getElementById('refreshBtn');
 
@@ -41,10 +43,19 @@ async function init() {
   } else {
     welcomeTitle.textContent = 'غير مصرح';
     welcomeSubtitle.textContent = 'حسابك غير مرتبط بأي صلاحية. تواصل مع الإدارة.';
+    dayoffCard.style.display = 'none';
     return;
   }
 
-  await loadDayoffStatus();
+  if (isAdminUser && !myCoiffeurId) {
+    dayoffCard.innerHTML = '<h2 class="section-title">تعطيل الأيام (Day Off)</h2><p class="note">ميزة تعطيل الأيام متاحة فقط لحساب الحلاق المرتبط بحلاق معين. كأدمن عام، تابع التعطيلات من قسم الحلاقين (قريباً).</p>';
+  } else {
+    const todayStr = getTodayLocalDateString();
+    dayoffDateInput.min = todayStr;
+    dayoffDateInput.value = todayStr;
+    await loadDayoffList();
+  }
+
   await loadBookings();
 }
 
@@ -55,74 +66,93 @@ logoutBtn.addEventListener('click', async () => {
 
 refreshBtn.addEventListener('click', loadBookings);
 
-async function loadDayoffStatus() {
-  if (isAdminUser && !myCoiffeurId) {
-    dayoffStatus.textContent = 'إدارة تعطيل الأيام متاحة من قسم خاص (قريباً). كأدمن، يمكنك التركيز على مراقبة الحجوزات.';
-    toggleDayoffBtn.style.display = 'none';
-    return;
-  }
-
-  const { data, error } = await supabaseClient.rpc('get_staff_dayoffs');
-
-  if (error) {
-    dayoffStatus.textContent = 'حدث خطأ أثناء تحميل حالة التعطيل.';
-    return;
-  }
-
-  const todayStr = getTodayLocalDateString();
-  const todayOff = data.find(d => d.day_off_date === todayStr);
-
-  if (todayOff) {
-    dayoffStatus.innerHTML = '<span class="dayoff-badge">أنت معطل اليوم</span>';
-    toggleDayoffBtn.style.display = 'none';
-
-    const cancelDayoffBtn = document.createElement('button');
-    cancelDayoffBtn.className = 'btn-cancel-dayoff';
-    cancelDayoffBtn.textContent = 'إلغاء التعطيل والعودة للعمل اليوم';
-    cancelDayoffBtn.addEventListener('click', async () => {
-      const { error: removeError } = await supabaseClient.rpc('remove_my_dayoff', { p_dayoff_id: todayOff.id });
-      if (removeError) {
-        showBox(dayoffMessage, 'حدث خطأ أثناء إلغاء التعطيل.', true);
-        return;
-      }
-      await loadDayoffStatus();
-    });
-
-    dayoffStatus.parentNode.insertBefore(cancelDayoffBtn, dayoffMessage);
-  } else {
-    dayoffStatus.textContent = 'أنت متاح للعمل اليوم.';
-    toggleDayoffBtn.style.display = 'block';
-  }
-}
-
-toggleDayoffBtn.addEventListener('click', async () => {
+addDayoffBtn.addEventListener('click', async () => {
   hideBox(dayoffMessage);
 
-  const confirmed = confirm('هل أنت متأكد من تعطيل اليوم؟ لن يتمكن العملاء من الحجز معك اليوم.');
+  const selectedDate = dayoffDateInput.value;
+  if (!selectedDate) {
+    return showBox(dayoffMessage, 'الرجاء اختيار تاريخ.', true);
+  }
+
+  const confirmed = confirm('هل أنت متأكد من تعطيل تاريخ ' + selectedDate + '؟');
   if (!confirmed) return;
 
-  toggleDayoffBtn.disabled = true;
-
-  const todayStr = getTodayLocalDateString();
+  addDayoffBtn.disabled = true;
+  addDayoffBtn.textContent = 'جاري التعطيل...';
 
   const { error } = await supabaseClient.rpc('add_my_dayoff', {
     p_coiffeur_id: myCoiffeurId,
-    p_date: todayStr
+    p_date: selectedDate
   });
 
-  toggleDayoffBtn.disabled = false;
+  addDayoffBtn.disabled = false;
+  addDayoffBtn.textContent = 'تعطيل هذا اليوم';
 
   if (error) {
     if (error.message.includes('DAYOFF_BLOCKED_HAS_BOOKINGS')) {
-      showBox(dayoffMessage, 'لا يمكن التعطيل، يوجد حجوزات مؤكدة اليوم. قم بإلغائها أولاً.', true);
+      showBox(dayoffMessage, 'لا يمكن التعطيل، يوجد حجوزات مؤكدة في هذا التاريخ. قم بإلغائها أولاً.', true);
+    } else if (error.message.includes('duplicate key')) {
+      showBox(dayoffMessage, 'هذا التاريخ معطل مسبقاً.', true);
     } else {
       showBox(dayoffMessage, 'حدث خطأ أثناء التعطيل.', true);
     }
     return;
   }
 
-  await loadDayoffStatus();
+  showBox(dayoffMessage, 'تم تعطيل هذا اليوم بنجاح.', false);
+  await loadDayoffList();
+  await loadBookings();
 });
+
+async function loadDayoffList() {
+  dayoffListContainer.innerHTML = '<p class="note">جاري التحميل...</p>';
+
+  const { data, error } = await supabaseClient.rpc('get_staff_dayoffs');
+
+  if (error) {
+    dayoffListContainer.innerHTML = '<p class="note" style="color:#ff6b6b;">حدث خطأ أثناء تحميل القائمة.</p>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    dayoffListContainer.innerHTML = '<p class="note">لا توجد أيام معطلة قادمة.</p>';
+    return;
+  }
+
+  dayoffListContainer.innerHTML = '';
+
+  data.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'detail-row';
+
+    const dateSpan = document.createElement('span');
+    dateSpan.textContent = d.day_off_date;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-cancel-small';
+    removeBtn.style.width = 'auto';
+    removeBtn.style.padding = '6px 12px';
+    removeBtn.textContent = 'إلغاء';
+    removeBtn.addEventListener('click', async () => {
+      const confirmed = confirm('هل تريد إلغاء تعطيل تاريخ ' + d.day_off_date + '؟');
+      if (!confirmed) return;
+
+      const { error: removeError } = await supabaseClient.rpc('remove_my_dayoff', { p_dayoff_id: d.id });
+
+      if (removeError) {
+        alert('حدث خطأ أثناء الإلغاء.');
+        return;
+      }
+
+      await loadDayoffList();
+      await loadBookings();
+    });
+
+    row.appendChild(dateSpan);
+    row.appendChild(removeBtn);
+    dayoffListContainer.appendChild(row);
+  });
+}
 
 async function loadBookings() {
   bookingsContainer.innerHTML = '<p class="note">جاري التحميل...</p>';
