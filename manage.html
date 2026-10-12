@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة حجزي | صالون الحلاقة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="logo">✂️ صالون <span>الأناقة</span></div>
+  </div>
+
+  <div class="container">
+
+    <div class="card hero-card">
+      <h1>إدارة حجزي</h1>
+      <p class="subtitle">أدخل رقم هاتفك وكود الحجز للمتابعة</p>
+    </div>
+
+    <!-- STEP 1: Lookup form -->
+    <div id="lookupCard" class="card">
+      <div class="field-group">
+        <label>رقم الهاتف</label>
+        <input type="tel" id="lookupTel" class="input-field" placeholder="0551234567" dir="ltr">
+      </div>
+      <div class="field-group">
+        <label>كود الحجز</label>
+        <input type="text" id="lookupCode" class="input-field" placeholder="مثال: 3484F6" dir="ltr" style="text-transform:uppercase;">
+      </div>
+      <button id="lookupBtn" class="btn-gold">بحث عن حجزي</button>
+      <div id="lookupMessage" class="message-box"></div>
+    </div>
+
+    <!-- STEP 2: Booking details + actions -->
+    <div id="detailsCard" class="card" style="display:none;">
+      <h2 style="color:#d4af37; margin-bottom:16px;">تفاصيل الحجز</h2>
+
+      <div class="detail-row"><span>الحلاق</span><strong id="detCoiffeur"></strong></div>
+      <div class="detail-row"><span>الخدمة</span><strong id="detService"></strong></div>
+      <div class="detail-row"><span>التاريخ</span><strong id="detDate"></strong></div>
+      <div class="detail-row"><span>الوقت</span><strong id="detTime"></strong></div>
+
+      <div id="tooLateNotice" class="message-box error" style="display:none; margin-top:16px;">
+        لا يمكن تعديل أو إلغاء الحجز قبل أقل من ساعة من الموعد.
+      </div>
+
+      <div id="actionButtons" style="margin-top:20px;">
+        <button id="showRescheduleBtn" class="btn-gold">تعديل الموعد</button>
+        <button id="cancelBtn" class="btn-cancel">إلغاء الحجز</button>
+      </div>
+
+      <div id="actionMessage" class="message-box"></div>
+    </div>
+
+    <!-- STEP 3: Reschedule form -->
+    <div id="rescheduleCard" class="card" style="display:none;">
+      <h2 style="color:#d4af37; margin-bottom:16px;">تعديل الموعد</h2>
+
+      <div class="field-group">
+        <label>اختر الحلاق</label>
+        <select id="rescheduleCoiffeurSelect" class="input-field">
+          <option value="">-- اختر --</option>
+        </select>
+      </div>
+
+      <div id="rescheduleSlotsSection" class="field-group" style="display:none;">
+        <label>اختر الوقت الجديد</label>
+        <div id="rescheduleSlotsContainer" class="slots-grid"></div>
+      </div>
+
+      <button id="confirmRescheduleBtn" class="btn-gold" disabled>تأكيد التعديل</button>
+      <button id="backFromRescheduleBtn" class="btn-secondary-full">رجوع</button>
+
+      <div id="rescheduleMessage" class="message-box"></div>
+    </div>
+
+    <!-- STEP 4: Success after cancel/reschedule -->
+    <div id="successCard" class="card confirmation-card" style="display:none;">
+      <div class="check-icon">✓</div>
+      <h2 id="successTitle">تم بنجاح</h2>
+      <p id="successText" class="note"></p>
+      <a href="manage.html" class="link-secondary">رجوع إلى إدارة الحجوزات</a>
+    </div>
+
+    <div class="footer-links">
+      <a href="index.html">العودة للحجز</a>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="manage.js"></script>
+</body>
+</html>
