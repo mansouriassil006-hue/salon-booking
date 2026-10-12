@@ -15,22 +15,23 @@ body {
 .top-bar {
   background: #0b0b0d;
   border-bottom: 1px solid #2a2a2e;
-  padding: 12px 20px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   position: relative;
 }
 
 .logo-img {
-  height: 45px;
+  height: 32px;
   width: auto;
+  max-width: 120px;
   object-fit: contain;
 }
 
 .logo {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #f5f0e6;
 }
