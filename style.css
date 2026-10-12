@@ -19,14 +19,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   position: relative;
 }
 
 .logo-img {
-  height: 32px;
+  height: 20px;
   width: auto;
-  max-width: 120px;
+  max-width: 60px;
   object-fit: contain;
 }
 
@@ -515,12 +515,12 @@ body {
 @media (max-width: 480px) {
   .top-bar {
     padding: 8px 16px;
-    gap: 8px;
+    gap: 6px;
   }
 
   .logo-img {
-    height: 24px;
-    max-width: 90px;
+    height: 16px;
+    max-width: 50px;
   }
 
   .logo {
