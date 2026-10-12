@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صالون الحلاقة | حجز موعد</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="logo">✂️ صالون <span>الأناقة</span></div>
+  </div>
+
+  <div class="container">
+
+    <div class="card hero-card">
+      <h1>احجز موعدك الآن</h1>
+      <p class="subtitle">الحجز متاح فقط لليوم الحالي</p>
+    </div>
+
+    <div id="statusBox" class="card status-box">
+      <div class="spinner"></div>
+      <span>جاري التحقق من حالة الحجز...</span>
+    </div>
+
+    <div id="bookingForm" class="card" style="display:none;">
+
+      <div class="field-group">
+        <label>اختر الحلاق</label>
+        <select id="coiffeurSelect" class="input-field">
+          <option value="">-- اختر الحلاق --</option>
+        </select>
+      </div>
+
+      <div id="slotsSection" class="field-group" style="display:none;">
+        <label>اختر الوقت المناسب</label>
+        <div id="slotsContainer" class="slots-grid"></div>
+      </div>
+
+      <div id="formFields" style="display:none;">
+
+        <div class="field-group">
+          <label>الاسم العائلي</label>
+          <input type="text" id="nomInput" class="input-field" placeholder="مثال: بن علي">
+        </div>
+
+        <div class="field-group">
+          <label>الاسم الشخصي</label>
+          <input type="text" id="prenomInput" class="input-field" placeholder="مثال: محمد">
+        </div>
+
+        <div class="field-group">
+          <label>رقم الهاتف</label>
+          <input type="tel" id="telInput" class="input-field" placeholder="0551234567" dir="ltr">
+        </div>
+
+        <div class="field-group">
+          <label>الخدمة المطلوبة</label>
+          <select id="serviceSelect" class="input-field">
+            <option value="">-- اختر الخدمة --</option>
+          </select>
+        </div>
+
+        <button id="submitBtn" class="btn-gold">تأكيد الحجز</button>
+      </div>
+
+      <div id="messageBox" class="message-box"></div>
+    </div>
+
+    <div id="confirmationBox" class="card confirmation-card" style="display:none;">
+      <div class="check-icon">✓</div>
+      <h2>تم تأكيد حجزك</h2>
+      <div class="code-box">
+        <span>كود الحجز الخاص بك</span>
+        <strong id="codeDisplay"></strong>
+      </div>
+      <p class="note">احتفظ بهذا الكود مع رقم هاتفك لإدارة حجزك لاحقاً (إلغاء أو تعديل).</p>
+      <a id="whatsappBtn" href="#" target="_blank" class="btn-whatsapp">
+        📩 إرسال التفاصيل عبر واتساب
+      </a>
+      <br>
+      <a href="index.html" class="link-secondary">إجراء حجز آخر</a>
+    </div>
+
+    <div class="footer-links">
+      <a href="manage.html">إدارة حجزي (إلغاء / تعديل)</a>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
