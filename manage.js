@@ -205,7 +205,7 @@ confirmRescheduleBtn.addEventListener('click', async () => {
   rescheduleCard.style.display = 'none';
   successCard.style.display = 'block';
   successTitle.textContent = 'تم تعديل الموعد';
-  successText.textContent = `تم تعديل موعدك إلى الساعة ${rescheduleSelectedSlot}. كود الحجز الخاص بك لم يتغير: ${currentCode}`;
+  successText.textContent = 'تم تعديل موعدك إلى الساعة ' + rescheduleSelectedSlot + '. كود الحجز الخاص بك لم يتغير: ' + currentCode;
 });
 
 function showBox(el, text, isError) {
