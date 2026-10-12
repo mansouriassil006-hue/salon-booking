@@ -15,12 +15,18 @@ body {
 .top-bar {
   background: #0b0b0d;
   border-bottom: 1px solid #2a2a2e;
-  padding: 18px 20px;
-  text-align: center;
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 12px;
   position: relative;
+}
+
+.logo-img {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
 }
 
 .logo {
