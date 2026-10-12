@@ -510,3 +510,25 @@ body {
 .btn-cancel-dayoff:hover {
   background: rgba(220, 53, 69, 0.1);
 }
+
+/* Ajustements spéciaux pour téléphones mobiles */
+@media (max-width: 480px) {
+  .top-bar {
+    padding: 8px 16px;
+    gap: 8px;
+  }
+
+  .logo-img {
+    height: 24px;
+    max-width: 90px;
+  }
+
+  .logo {
+    font-size: 16px;
+  }
+
+  .btn-logout {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
