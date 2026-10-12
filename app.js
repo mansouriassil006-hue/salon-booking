@@ -72,7 +72,17 @@ async function loadServices() {
   data.forEach(s => {
     const opt = document.createElement('option');
     opt.value = s.id;
-    opt.textContent = s.name;
+
+    let priceLabel = '';
+    if (s.price_text) {
+      priceLabel = ' — ' + s.price_text;
+    } else if (s.price !== null && s.price !== undefined) {
+      priceLabel = ' — ' + s.price + ' DA';
+    }
+
+    opt.textContent = s.name + priceLabel;
+    opt.dataset.name = s.name;
+    opt.dataset.pricelabel = priceLabel;
     serviceSelect.appendChild(opt);
   });
 }
@@ -161,8 +171,10 @@ submitBtn.addEventListener('click', async () => {
   }
 
   const result = data[0];
-  const serviceName = serviceSelect.options[serviceSelect.selectedIndex].textContent;
-  showConfirmation(result, nom, prenom, tel, serviceName);
+  const selectedServiceOption = serviceSelect.options[serviceSelect.selectedIndex];
+  const serviceNameForWhatsapp = selectedServiceOption.dataset.name + selectedServiceOption.dataset.pricelabel;
+
+  showConfirmation(result, nom, prenom, tel, serviceNameForWhatsapp);
 });
 
 function showConfirmation(result, nom, prenom, tel, serviceName) {
