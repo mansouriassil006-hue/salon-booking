@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم | صالون الحلاقة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="logo">✂️ صالون <span>الأناقة</span></div>
+    <button id="logoutBtn" class="btn-logout">خروج</button>
+  </div>
+
+  <div class="container">
+
+    <div class="card hero-card">
+      <h1 id="welcomeTitle">لوحة التحكم</h1>
+      <p class="subtitle" id="welcomeSubtitle">جاري التحميل...</p>
+    </div>
+
+    <!-- Day Off Section -->
+    <div class="card">
+      <h2 class="section-title">تعطيل اليوم (Day Off)</h2>
+      <p class="note" id="dayoffStatus">جاري التحقق...</p>
+      <button id="toggleDayoffBtn" class="btn-gold" style="display:none;">تعطيل اليوم الحالي</button>
+      <div id="dayoffMessage" class="message-box"></div>
+    </div>
+
+    <!-- Bookings Section -->
+    <div class="card">
+      <div class="section-header">
+        <h2 class="section-title">حجوزات اليوم</h2>
+        <button id="refreshBtn" class="btn-refresh">🔄 تحديث</button>
+      </div>
+      <div id="bookingsContainer">
+        <p class="note">جاري تحميل الحجوزات...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
