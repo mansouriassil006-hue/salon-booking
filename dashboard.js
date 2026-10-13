@@ -5,11 +5,19 @@ let isAdminUser = false;
 const welcomeTitle = document.getElementById('welcomeTitle');
 const welcomeSubtitle = document.getElementById('welcomeSubtitle');
 const logoutBtn = document.getElementById('logoutBtn');
+
+const extraHoursCard = document.getElementById('extraHoursCard');
+const customSlotTimeInput = document.getElementById('customSlotTimeInput');
+const addCustomSlotBtn = document.getElementById('addCustomSlotBtn');
+const customSlotMessage = document.getElementById('customSlotMessage');
+const customSlotsListContainer = document.getElementById('customSlotsListContainer');
+
 const dayoffCard = document.getElementById('dayoffCard');
 const dayoffDateInput = document.getElementById('dayoffDateInput');
 const addDayoffBtn = document.getElementById('addDayoffBtn');
 const dayoffMessage = document.getElementById('dayoffMessage');
 const dayoffListContainer = document.getElementById('dayoffListContainer');
+
 const bookingsContainer = document.getElementById('bookingsContainer');
 const refreshBtn = document.getElementById('refreshBtn');
 
@@ -44,16 +52,19 @@ async function init() {
     welcomeTitle.textContent = 'غير مصرح';
     welcomeSubtitle.textContent = 'حسابك غير مرتبط بأي صلاحية. تواصل مع الإدارة.';
     dayoffCard.style.display = 'none';
+    extraHoursCard.style.display = 'none';
     return;
   }
 
   if (isAdminUser && !myCoiffeurId) {
-    dayoffCard.innerHTML = '<h2 class="section-title">تعطيل الأيام (Day Off)</h2><p class="note">ميزة تعطيل الأيام متاحة فقط لحساب الحلاق المرتبط بحلاق معين. كأدمن عام، تابع التعطيلات من قسم الحلاقين (قريباً).</p>';
+    dayoffCard.innerHTML = '<h2 class="section-title">تعطيل الأيام (Day Off)</h2><p class="note">ميزة تعطيل الأيام متاحة فقط لحساب الحلاق المرتبط بحلاق معين.</p>';
+    extraHoursCard.style.display = 'none';
   } else {
     const todayStr = getTodayLocalDateString();
     dayoffDateInput.min = todayStr;
     dayoffDateInput.value = todayStr;
     await loadDayoffList();
+    await loadCustomSlotsList();
   }
 
   await loadBookings();
@@ -65,6 +76,86 @@ logoutBtn.addEventListener('click', async () => {
 });
 
 refreshBtn.addEventListener('click', loadBookings);
+
+// ===== EXTRA HOURS (custom slots) =====
+
+addCustomSlotBtn.addEventListener('click', async () => {
+  hideBox(customSlotMessage);
+
+  const timeValue = customSlotTimeInput.value;
+  if (!timeValue) {
+    return showBox(customSlotMessage, 'الرجاء اختيار وقت.', true);
+  }
+
+  addCustomSlotBtn.disabled = true;
+  addCustomSlotBtn.textContent = 'جاري الإضافة...';
+
+  const { error } = await supabaseClient.rpc('add_my_custom_slot', {
+    p_time: timeValue
+  });
+
+  addCustomSlotBtn.disabled = false;
+  addCustomSlotBtn.textContent = 'إضافة هذا الوقت';
+
+  if (error) {
+    if (error.message.includes('duplicate key')) {
+      showBox(customSlotMessage, 'هذا الوقت مفتوح مسبقاً.', true);
+    } else {
+      showBox(customSlotMessage, 'حدث خطأ أثناء الإضافة.', true);
+    }
+    return;
+  }
+
+  showBox(customSlotMessage, 'تم فتح هذا الوقت بنجاح.', false);
+  customSlotTimeInput.value = '';
+  await loadCustomSlotsList();
+});
+
+async function loadCustomSlotsList() {
+  customSlotsListContainer.innerHTML = '<p class="note">جاري التحميل...</p>';
+
+  const { data, error } = await supabaseClient.rpc('get_my_custom_slots');
+
+  if (error) {
+    customSlotsListContainer.innerHTML = '<p class="note" style="color:#ff6b6b;">حدث خطأ أثناء التحميل.</p>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    customSlotsListContainer.innerHTML = '<p class="note">لا توجد أوقات إضافية مفتوحة اليوم.</p>';
+    return;
+  }
+
+  customSlotsListContainer.innerHTML = '';
+
+  data.forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'detail-row';
+
+    const timeSpan = document.createElement('span');
+    timeSpan.textContent = s.slot_time.substring(0, 5);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-cancel-small';
+    removeBtn.style.width = 'auto';
+    removeBtn.style.padding = '6px 12px';
+    removeBtn.textContent = 'إلغاء';
+    removeBtn.addEventListener('click', async () => {
+      const { error: removeError } = await supabaseClient.rpc('remove_my_custom_slot', { p_id: s.id });
+      if (removeError) {
+        alert('حدث خطأ أثناء الإلغاء.');
+        return;
+      }
+      await loadCustomSlotsList();
+    });
+
+    row.appendChild(timeSpan);
+    row.appendChild(removeBtn);
+    customSlotsListContainer.appendChild(row);
+  });
+}
+
+// ===== DAY OFF =====
 
 addDayoffBtn.addEventListener('click', async () => {
   hideBox(dayoffMessage);
@@ -153,6 +244,8 @@ async function loadDayoffList() {
     dayoffListContainer.appendChild(row);
   });
 }
+
+// ===== BOOKINGS =====
 
 async function loadBookings() {
   bookingsContainer.innerHTML = '<p class="note">جاري التحميل...</p>';
