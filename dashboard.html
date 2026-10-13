@@ -23,6 +23,27 @@
       <p class="subtitle" id="welcomeSubtitle">جاري التحميل...</p>
     </div>
 
+    <!-- Extra Hours Section -->
+    <div class="card" id="extraHoursCard">
+      <h2 class="section-title">إضافة ساعة عمل إضافية اليوم</h2>
+      <p class="note">افتح وقتاً إضافياً خارج أوقات العمل المعتادة (مثلاً 08:00 أو 22:00) لليوم الحالي فقط.</p>
+
+      <div class="field-group">
+        <label>اختر الوقت</label>
+        <input type="time" id="customSlotTimeInput" class="input-field" dir="ltr">
+      </div>
+
+      <button id="addCustomSlotBtn" class="btn-gold">إضافة هذا الوقت</button>
+      <div id="customSlotMessage" class="message-box"></div>
+
+      <div style="margin-top:18px;">
+        <h3 style="color:#b8b8b8; font-size:14px; margin-bottom:10px;">الأوقات الإضافية المفتوحة اليوم</h3>
+        <div id="customSlotsListContainer">
+          <p class="note">جاري التحميل...</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Day Off Section -->
     <div class="card" id="dayoffCard">
       <h2 class="section-title">تعطيل الأيام (Day Off)</h2>
